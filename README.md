@@ -23,11 +23,11 @@ This fuzzing system performs both ISA and RTL simulations of a RISC-V processor 
     - **Instruction** being executed
     - **Coverage** counter
     - **Input and output port signals** of the DUT, these where obtained by the design verilog file.
-- These values are captured using a logger object, which appends each row to a pandas DataFrame and saves the full dataset at the end of each iteration.
+- These values are captured using a logger, which appends each row to a pandas DataFrame and saves the full dataset at the end of each iteration.
 
 ### c) **Formatting and Output**
 
-- Each row in the CSV file represents a single cycle of RTL simulation, with the value of every relevant signal for that cycle.
+- Each row in the datasets represents a single cycle of RTL simulation, with the value of every relevant signal for that cycle.
 - All values are recorded as hexadecimal strings or integers.
 
 ---
@@ -156,6 +156,19 @@ In particular, the `auto_tl_master_xing_out_a*` signals and `auto_tl_master_xing
 
 - *A (auto_tl_master_xing_out_a*)**: Request from the core → memory/peripheral
 - *D (auto_tl_master_xing_out_d*)**: Response from memory/peripheral → core
+
+---
+
+### **ISA State Columns (per-cycle, matched by PC and instruction):**
+
+| Field | Description |
+| --- | --- |
+| `x_regs_isa` | Dictionary with the value of each RISC-V integer register (`x0`–`x31`) as seen by the ISA simulator at this PC/instruction. |
+| `f_regs_isa` | Dictionary with the value of each RISC-V floating-point register (`f0`–`f31`) as seen by the ISA simulator at this PC/instruction. |
+| `csrs_isa` | Dictionary with the value of each RISC-V CSR (e.g., `mstatus`, `mepc`, `mcause`, etc.) at this PC/instruction. |
+| `mem_isa` | Dictionary with memory access fields from the ISA simulator for this instruction: includes `mem_rd_addr`, `mem_rd_val`, `mem_wr_addr`, and `mem_wr_val`. |
+
+These columns allow you to compare, for every cycle and instruction, the internal architectural state between the RTL design and the reference ISA simulation, supporting detailed bug and divergence analysis.
 
 ---
 
